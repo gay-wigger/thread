@@ -5,8 +5,6 @@ import (
 	"net/http"
   "os"
   "encoding/json"
-  "twitter"
-  "terminal"
 )
 
 type Config struct {
@@ -31,9 +29,11 @@ func main() {
   username := os.Args[1]
 	client := &http.Client{}
   
-  accessToken := twitter.getAccessToken(client, apiKey, apiSecret)
-  id := getTwitterUserId(client, accessToken, username)
-  getFollowers(client, accessToken, id)
+  accessToken := getAccessToken(client, apiKey, apiSecret).UnwrapElsePanic("Could not get access token")
+  id := getTwitterUserId(client, accessToken, username).UnwrapElsePanic("Could not get user id")
+  followers := getFollowers(client, accessToken, id).UnwrapElsePanic("Could not get followers")
+
+  fmt.Println(followers)
 }
 
 func loadConfig(filename string) (Config, error) {
